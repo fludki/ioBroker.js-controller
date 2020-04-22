@@ -594,7 +594,7 @@ function createObjects(onConnect) {
                                     if (procs[id].restartTimer) {
                                         clearTimeout(procs[id].restartTimer);
                                     }
-                                    const restartTimeout = (procs[id].config.common.stopTimeout || 500) + 2500
+                                    const restartTimeout = (procs[id].config.common.stopTimeout || 500) + 2500;
                                     procs[id].restartTimer = setTimeout(_id => startInstance(_id), restartTimeout, id);
                                 }
                             } else {
@@ -639,7 +639,7 @@ function createObjects(onConnect) {
                         (procs[id].config.common.mode !== 'extension' || !procs[id].config.native.webInstance)
                     ) {
                         // We should give is a slight delay to allow an pot. former existing process on other host to exit
-                        const restartTimeout = (procs[id].config.common.stopTimeout || 500) + 2500
+                        const restartTimeout = (procs[id].config.common.stopTimeout || 500) + 2500;
                         procs[id].restartTimer = setTimeout(_id => startInstance(_id), restartTimeout, id);
                     }
                 }
@@ -1131,6 +1131,7 @@ function setMeta() {
     const id = hostObjectPrefix;
 
     objects.getObject(id, (err, oldObj) => {
+        /** @type {ioBroker.Object} */
         let newObj;
         if (compactGroupController) {
             newObj = {
@@ -1597,8 +1598,7 @@ function setMeta() {
     objects.getObjectView('system', 'state', {startkey: hostObjectPrefix + '.', endkey: hostObjectPrefix + '.\u9999', include_docs: true}, (err, doc) => {
         if (err) {
             logger && logger.error(hostLogPrefix + ' Could not collect ' + hostObjectPrefix + ' states to check for obsolete states: ' + err);
-        }
-        else if (doc.rows) {
+        } else if (doc.rows) {
             // identify existing states for deletion, because they are not in the new tasks-list
             let thishostStates = doc.rows;
             if (!compactGroupController) {
@@ -2293,12 +2293,13 @@ function processMessage(msg) {
             })();
             break;
 
-        case 'updateMultihost':
+        case 'updateMultihost': {
             const result = startMultihost();
             if (msg.callback) {
                 sendTo(msg.from, msg.command, {result: result}, msg.callback);
             }
             break;
+        }
 
         case 'getInterfaces':
             if (msg.callback) {
@@ -2952,7 +2953,7 @@ function startInstance(id, wakeUp) {
     // Check if all required adapters installed and have valid version
     if (instance.common.dependencies || instance.common.globalDependencies) {
         return checkVersions(id, instance.common.dependencies, instance.common.globalDependencies)
-            .then(ok => {
+            .then(() => {
                 delete instance.common.dependencies;
                 delete instance.common.globalDependencies;
                 startInstance(id, wakeUp);
