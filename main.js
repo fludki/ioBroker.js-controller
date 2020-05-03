@@ -276,6 +276,7 @@ function handleDisconnect() {
 }
 
 function createStates(onConnect) {
+    // eslint-disable-next-line no-unused-vars
     const _inst = new States({
         namespace: hostLogPrefix,
         connection: config.states,
@@ -515,6 +516,7 @@ function initializeController() {
 
 // create "objects" object
 function createObjects(onConnect) {
+    // eslint-disable-next-line no-unused-vars
     const _inst = new Objects({
         namespace:  hostLogPrefix,
         connection: config.objects,
@@ -2349,7 +2351,7 @@ function processMessage(msg) {
                 if (fs.existsSync(configFile)) {
                     try {
                         let config = fs.readFileSync(configFile).toString('utf8');
-                        let stat = fs.lstatSync(configFile);
+                        const stat = fs.lstatSync(configFile);
                         config = JSON.parse(config);
                         sendTo(msg.from, msg.command, {config, isActive: uptimeStart > stat.mtimeMs}, msg.callback);
                     } catch (e) {
@@ -2367,7 +2369,7 @@ function processMessage(msg) {
             }
             break;
 
-        case 'writeBaseSettings':
+        case 'writeBaseSettings': {
             let error;
             if (msg.message) {
                 const configFile = tools.getConfigFileName();
@@ -2418,6 +2420,7 @@ function processMessage(msg) {
             }
 
             break;
+        }
     }
 }
 
@@ -3346,7 +3349,9 @@ function startInstance(id, wakeUp) {
 
                 // Some parts of the Adapter start logic are async, so "the finalization" is put into this method
                 const handleAdapterProcessStart = () => {
-                    if (!procs[id]) return;
+                    if (!procs[id]) {
+                        return;
+                    }
                     if (!procs[id].process) { // We were not able or should not start as compact mode
                         try {
                             procs[id].process = cp.fork(fileNameFull, args, {
