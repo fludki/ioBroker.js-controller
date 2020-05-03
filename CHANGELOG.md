@@ -1,6 +1,66 @@
 # Changelog
 
-## 3.0.14 (2020-04-18) Release Elena
+## 3.0.21/3.1.0 (2020-05-xx) Release Elena WIP!!!
+* (foxriver76) catch error on alias ids with empty objects
+* (Apollon77) make sure promise rejections without error are not crashing the controller 
+* (bluefox) Add Controller messages to allow read and write controller base settings (iobroker.json); introduce adapter feature flag CONTROLLER_READWRITE_BASE_SETTINGS
+* (Apollon77) handle edge case where hostName is not a string when sending messages (Sentry IOBROKER-ADMIN-B)
+* (Apollon77) handle case where letsencrypt directory can not be created (Sentry IOBROKER-ADMIN-C/IOBROKER-WEB-B)
+* (bluefox) add IDs to some log messages
+* (foxriver76) fix some logging in objects lib
+* (Apollon77) make sure to catch error when reading log directory (Sentry IOBROKER-JS-CONTROLLER-1F)
+* (foxriver76) Make decrypt and encrypt methods available in adapter object for developers
+* (AlCalzone) Add adapter exitcode 13 (ADAPTER_REQUESTED_REBUILD) to also allow to tell js-controller to rebuild this adapter.
+* (Apollon77) make EXIT_CODES available on adapter object to use exit code constants also in adapters
+* (Apollon77) change logging for invalid readFile actions to debug because ca be triggered also by other cases then planned ones. Update objects lib
+
+## 3.0.20 (2020-04-28) Release Elena
+* (Apollon77) make sure disabling instances while installation is running do not crash the controller (Sentry IOBROKER-JS-CONTROLLER-Z) 
+* (From Forum) prevent error on backup restore
+* (Apollon77) Make sure error handing do not throw exception
+* (Apollon77) Catch all errors when trying to store the File DB (Sentry IOBROKER-JS-CONTROLLER-14/15)
+* (Apollon77) Make sure also edge cases on start adapter are handled correctly (Sentry IOBROKER-JS-CONTROLLER-12)
+* (Apollon77) Use 3.3.4 of objects library to prevent an error from 3.3.3
+
+## 3.0.19 (2020-04-26) Release Elena
+* (Apollon77) make sure to correctly create empty logfile on "delLogs" (Sentry IOBROKER-JS-CONTROLLER-Q) 
+* (foxriver76) make callback consistent when client has closed connection (Sentry IOBROKER-JS-CONTROLLER-R)
+* (foxriver76) add missing Error for DB closed, which was used but undefined in tools.js
+* (foxriver76) if buffer is of type object and not a buffer object log a warning - also bufferFrom null will also result in an error, prevent it (Sentry IOBROKER-JS-CONTROLLER-S)
+* (foxriver76) in edge cases def can be an object, we also support this on extend*Object*
+* (foxriver76) make sure stacktrace is there on validateId
+* (foxriver76) avoid error on installAdapters function due to downloadyRetry (Sentry IOBROKER-JS-CONTROLLER-V)
+* (Apollon77) make sure Logfile is rewritten with empty content (Sentry IOBROKER-JS-CONTROLLER-Q)
+* (Apollon77) Update Sentry Plugin to 1.0.0, adds pathBlacklist option, fixes pot. crash reason
+* (foxriver76) ensure backward compatibility with auto decrypt function
+* (Apollon77) Re-allow states to be set with no val property but check that there is at least one property
+* (foxriver76) also call enumerateAdapterDocs when deleting all instances
+
+## 3.0.18 (2020-04-23) Release Elena
+* (Apollon77) correct error handling for letsencrypt challenge server
+* (foxriver76) fix default value of extend*Object
+* (AlCalzone) Add 'CONTROLLER_NPM_AUTO_REBUILD' to supported features
+
+## 3.0.17 (2020-04-22) Release Elena
+* (Apollon77) make sure system.config objects has correct type
+* (foxriver76) make sure that callback of extend*Object returns object as before (was broken in 3.0.15)
+
+## 3.0.16 (2020-04-22) Release Elena
+* (Apollon77) make sure error cases are handled on zip file creation for objects (Sentry IOBROKER-JS-CONTROLLER-J)
+* (Apollon77) make sure to check id when iterating over it (Sentry IOBROKER-WEB-3)
+* (foxriver76) fix path on getInstalledInfo (was broken in 3.0.15)
+
+## 3.0.15 (2020-04-21) Release Elena
+* (Apollon77) Adjust ID checking to allow numbers for non foreign id's for now but log warn
+* (foxriver76/Apollon77) Adjust extendObject logic and only set state when state was not defined before
+* (Apollon77) check that path is found before using it on rebuild CLI command (Sentry issue)
+* (foxriver76) fix error on caught process exceptions
+* (foxriver76)  make sure that procs[id] is not undefined in some cases (Sentry IOBROKER-JS-CONTROLLER-E/G)
+* (foxriver76/Apollon77) handle weird case where io-package.json from controller is not on normal place when getInstalledInfo is called (Sentry IOBROKER-JS-CONTROLLER-B/C/D/F/H)
+* (foxriver76) fix bug for some cases where common.def is used on creation of foreign objects
+* (Apollon77) make sure error cases are handled on zip file creation for objects (Sentry IOBROKER-JS-CONTROLLER-J)
+ 
+## 3.0.14 (2020-04-20) Release Elena
 * First version for latest repository
 * (Apollon77) catch errors when letsencrypt server can not bind to port 80 (Sentry IOBROKER-WEB-1)
 
@@ -36,7 +96,7 @@
 ## 3.0.6 (2020-04-11) Release Elena
 * (bluefox) Fixed vis debug
 * (foxriver76/Apollon77) optimize and fix dependency checks to consider all dependencies correctly on install, upgrade and adapter start
-* (AlCalzone) add `iobroker extend object` command
+* (AlCalzone) add `iobroker object extend` command
 * (AlCalzone) optimize performance when objects are duplicated and checked internally
 * (AlCalzone) Add command `iobroker debug adapter` to start Node.js debug sessions for an adapter
 * (foxriver76) validate id also has to allow objects with correct properties (device, channel ...)

@@ -1939,9 +1939,9 @@ function processMessage(msg) {
                             if (doc.rows[i].id === hostObjectPrefix) {
                                 let _ioPack;
                                 try {
-                                    _ioPack = JSON.parse(fs.readFileSync(__dirname + '/io-package.json'));
+                                    _ioPack = JSON.parse(fs.readFileSync(`${__dirname}/io-package.json`));
                                 } catch (e) {
-                                    logger.error(hostLogPrefix + ' cannot read and parse "' + __dirname + '/io-package.json"');
+                                    logger.error(`${hostLogPrefix} cannot read and parse "${__dirname}/io-package.json"`);
                                 }
                                 if (_ioPack) {
                                     _ioPack.common.host = hostname;
@@ -1964,7 +1964,7 @@ function processMessage(msg) {
                                             timeout = null;
                                             sendTo(msg.from, msg.command, result, msg.callback);
                                         } else {
-                                            logger.warn(hostLogPrefix + ' too delayed answer for ' + (ioPack ? ioPack.host : id));
+                                            logger.warn(`${hostLogPrefix} too delayed answer for ${ioPack ? ioPack.host : id}`);
                                         }
                                     }
                                 });
@@ -1976,14 +1976,14 @@ function processMessage(msg) {
                     } else {
                         // Start timeout and send answer in 5 seconds if some hosts are offline
                         timeout = setTimeout(() => {
-                            logger.warn(hostLogPrefix + ' some hosts are offline');
+                            logger.warn(`${hostLogPrefix} some hosts are offline`);
                             timeout = null;
                             sendTo(msg.from, msg.command, result, msg.callback);
                         }, 5000);
                     }
                 });
             } else {
-                logger.error(hostLogPrefix + ' Invalid request ' + msg.command + '. "callback" or "from" is null');
+                logger.error(`${hostLogPrefix} Invalid request ${msg.command}. "callback" or "from" is null`);
             }
             break;
 
@@ -2092,6 +2092,7 @@ function processMessage(msg) {
                 const lines = msg.message || 200;
                 let text  = '';
                 let logFile_ = logger.getFileName(); //__dirname + '/log/' + tools.appName + '.log';
+
                 if (!fs.existsSync(logFile_)) {
                     logFile_ = __dirname + '/../../log/' + tools.appName + '.log';
                 }
@@ -2184,7 +2185,7 @@ function processMessage(msg) {
             const logFile = logger.getFileName(); //__dirname + '/log/' + tools.appName + '.log';
             fs.existsSync(__dirname +       '/log/' + tools.appName + '.log') && fs.writeFileSync(__dirname +       '/log/' + tools.appName + '.log', '');
             fs.existsSync(__dirname + '/../../log/' + tools.appName + '.log') && fs.writeFileSync(__dirname + '/../../log/' + tools.appName + '.log', '');
-            fs.existsSync(logFile) && fs.writeFileSync(logFile);
+            fs.existsSync(logFile) && fs.writeFileSync(logFile, '');
 
             msg.callback && msg.from && sendTo(msg.from, msg.command, null, msg.callback);
             break;
@@ -2200,6 +2201,8 @@ function processMessage(msg) {
                         sendTo(msg.from, msg.command, {error: err}, msg.callback);
                     }
                 });
+            } else {
+                logger.error(hostLogPrefix + ' Invalid request ' + msg.command + '. "callback" or "from" is null');
             }
             break;
 
@@ -2236,6 +2239,8 @@ function processMessage(msg) {
                         }
                     }
                 });
+            } else {
+                logger.error(hostLogPrefix + ' Invalid request ' + msg.command + '. "callback" or "from" is null');
             }
             break;
 
@@ -2302,8 +2307,10 @@ function processMessage(msg) {
         }
 
         case 'getInterfaces':
-            if (msg.callback) {
+            if (msg.callback && msg.from) {
                 sendTo(msg.from, msg.command, {result: os.networkInterfaces()}, msg.callback);
+            } else {
+                logger.error(hostLogPrefix + ' Invalid request ' + msg.command + '. "callback" or "from" is null');
             }
             break;
 
@@ -2324,11 +2331,93 @@ function processMessage(msg) {
                 installQueue.push({id: msg.message.id, rebuild: true, rebuildViaInstall: msg.message.rebuildViaInstall});
                 // start install queue if not started
                 installQueue.length === 1 && installAdapters();
+
+                if (msg.callback && msg.from) {
+                    sendTo(msg.from, msg.command, {result: 'ok'}, msg.callback);
+                }
             } else {
                 logger.info(hostLogPrefix + ' ' + msg.message.id + ' still in installQueue, rebuild will be done with install');
+                if (msg.callback && msg.from) {
+                    sendTo(msg.from, msg.command, {result: 'pending'}, msg.callback);
+                }
             }
             break;
 
+        case 'readBaseSettings':
+            if (msg.callback && msg.from) {
+                const configFile = tools.getConfigFileName();
+                if (fs.existsSync(configFile)) {
+                    try {
+                        let config = fs.readFileSync(configFile).toString('utf8');
+                        let stat = fs.lstatSync(configFile);
+                        config = JSON.parse(config);
+                        sendTo(msg.from, msg.command, {config, isActive: uptimeStart > stat.mtimeMs}, msg.callback);
+                    } catch (e) {
+                        const error = 'Cannot parse file ' + configFile;
+                        logger.error(hostLogPrefix + ' ' + error);
+                        sendTo(msg.from, msg.command, {error}, msg.callback);
+                    }
+                } else {
+                    const error = 'Cannot find file ' + configFile;
+                    logger.error(hostLogPrefix + ' ' + error);
+                    sendTo(msg.from, msg.command, {error}, msg.callback);
+                }
+            } else {
+                logger.error(hostLogPrefix + ' No adapter name is specified for readBaseSettings command from  ' + msg.from);
+            }
+            break;
+
+        case 'writeBaseSettings':
+            let error;
+            if (msg.message) {
+                const configFile = tools.getConfigFileName();
+                if (fs.existsSync(configFile)) {
+                    let config;
+                    if (typeof msg.message === 'string') {
+                        try {
+                            config = JSON.parse(msg.message);
+                        } catch (e) {
+                            error = 'Cannot parse data ' + msg.message;
+                        }
+                    } else {
+                        config = msg.message;
+                    }
+
+                    if (!error) {
+                        // todo validate structure, because very important
+                        if (!config.system) {
+                            error = 'Cannot find "system" in data';
+                        } else if (!config.objects) {
+                            error = 'Cannot find "objects" in data';
+                        } else if (!config.states) {
+                            error = 'Cannot find "states" in data';
+                        } else if (!config.log) {
+                            error = 'Cannot find "log" in data';
+                        }
+                    }
+
+                    if (!error) {
+                        try {
+                            fs.writeFileSync(configFile, JSON.stringify(config, null, 2));
+                        } catch (e) {
+                            error = 'Cannot write file ' + configFile;
+                        }
+                    }
+                }
+            } else {
+                error = 'No data found for writeBaseSettings ' + msg.from;
+            }
+
+            if (error) {
+                logger.error(hostLogPrefix + ' ' + error);
+                if (msg.callback && msg.from) {
+                    sendTo(msg.from, msg.command, {error}, msg.callback);
+                }
+            } else {
+                msg.callback && msg.from && sendTo(msg.from, msg.command, {result: 'ok'}, msg.callback);
+            }
+
+            break;
     }
 }
 
@@ -2698,7 +2787,7 @@ function installAdapters() {
         return;
     }
 
-    if (procs[task.id].downloadRetry < 4) {
+    if (procs[task.id] && procs[task.id].downloadRetry < 4) {
         procs[task.id].downloadRetry++;
 
         if (task.rebuild) {
@@ -2754,7 +2843,7 @@ function installAdapters() {
                 if (exitCode === EXIT_CODES.CANNOT_INSTALL_NPM_PACKET) {
                     task.inProgress = false;
                     installQueue.push(task); // We add at the end again to try three times
-                } else {
+                } else if (procs[task.id]) {
                     procs[task.id].needsRebuild = false;
                     if (!task.disabled) {
                         if (!procs[task.id].config.common.enabled) {
@@ -3173,9 +3262,11 @@ function startInstance(id, wakeUp) {
                                 //noinspection JSUnresolvedVariable
                                 if (code === EXIT_CODES.ADAPTER_REQUESTED_TERMINATION) {
                                     logger.error(`${hostLogPrefix} instance ${id} terminated by request of the instance itself and will not be restarted, before user restarts it.`);
-                                } else
-                                if (code === EXIT_CODES.START_IMMEDIATELY_AFTER_STOP && procs[id] && procs[id].config && procs[id].config.common.restartSchedule) {
-                                    logger.info(`${hostLogPrefix} instance ${id} scheduled normal terminated and will be started anew.`);
+                                } else if (code === EXIT_CODES.START_IMMEDIATELY_AFTER_STOP && procs[id] && procs[id].config && procs[id].config.common.restartSchedule) {
+                                    logger.info(`${hostLogPrefix} instance ${id} scheduled normal terminated and will be restarted on schedule.`);
+                                } else if (code === EXIT_CODES.ADAPTER_REQUESTED_REBUILD && procs[id]) {
+                                    logger.info(`${hostLogPrefix} instance ${id} requested a rebuild of its dependencies and will be restarted after that is done.`);
+                                    procs[id].needsRebuild = true;
                                 } else {
                                     code = parseInt(code, 10);
                                     const text = `${hostLogPrefix} instance ${id} terminated with code ${code} (${getErrorText(code) || ''})`;
@@ -3255,6 +3346,7 @@ function startInstance(id, wakeUp) {
 
                 // Some parts of the Adapter start logic are async, so "the finalization" is put into this method
                 const handleAdapterProcessStart = () => {
+                    if (!procs[id]) return;
                     if (!procs[id].process) { // We were not able or should not start as compact mode
                         try {
                             procs[id].process = cp.fork(fileNameFull, args, {

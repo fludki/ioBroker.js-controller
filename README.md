@@ -11,6 +11,16 @@
 
 The ioBroker.js-controller is the heart of any ioBroker installation. The controller is owning the central configuration of the ioBroker installation and controls and monitors all adapter processes for the current host.
 
+**Please check the js-controller compatibility information below which version runs on your Node.js version**
+
+## Compatibility
+* js-controller 3.x works with Node.js 10.x, 12.x and probably 14.x (first tests look good)
+* js-controller 2.x works with Node.js 8.x, 10.x , 12.x and probably 14.x (untested)
+* js-controller 1.x works with Node.js 4.x, 6.x, 8.x and probably 10.x (untested)
+
+Please try to stay current with your Node.js version because the support is limited in Time. As of now (April 2020) all Node.js versions below 10.x are no longer supported by Node.js and considered EOL (End Of Life).
+To upgrade your Node.js version and ioBroker please follow https://forum.iobroker.net/topic/22867/how-to-node-js-f%C3%BCr-iobroker-richtig-updaten !
+
 ## Links
 
 * [Changelog](CHANGELOG.md)
@@ -597,6 +607,81 @@ With such a setup, ioBroker will connect to one of these sentinel processes to g
 
 ... CLI
 ... Files vs PEM content
+... TODO
+
+### js-controller Host Messages
+
+... TODO
+#### shell
+... TODO
+
+#### cmdExec
+... TODO
+
+#### getRepository
+... TODO
+
+#### getInstalled
+... TODO
+
+#### getInstalledAdapter
+... TODO
+
+#### getVersion
+... TODO
+
+#### getDiagData
+... TODO
+
+... TODO
+
+#### getLocationOnDisk
+... TODO
+
+#### getDevList
+... TODO
+
+#### getLogs
+... TODO
+
+#### getHostInfo
+... TODO
+
+#### getHostInfoShort
+... TODO
+
+#### delLogs
+... TODO
+
+#### readDirAsZip
+... TODO
+
+#### writeDirAsZip
+... TODO
+
+#### readObjectsAsZip
+... TODO
+
+#### writeObjectsAsZip
+... TODO
+
+#### updateMultihost
+... TODO
+
+#### getInterfaces
+... TODO
+
+#### upload
+... TODO
+
+#### rebuildAdapter
+... TODO
+
+#### readBaseSettings
+... TODO
+
+#### writeBaseSettings
+... TODO
 
 ### Adapter Development
 **Feature status:** Stable
@@ -678,9 +763,11 @@ The following features can be checked using this method:
 * **ALIAS_SEPARATE_READ_WRITE_ID**: allows to specify separate ids for read and write (since js.controller 3.0)
 * **ADAPTER_GETPORT_BIND**: the adapter.getPort method allows an optional second parameter to bind the port only on a special network interface  (since js.controller 2.0) 
 * **ADAPTER_SET_OBJECT_SETS_DEFAULT_VALUE**: adapter.setObject(*) methods now sets the default value (def) after the object was created  (since js.controller 2.0)
-* **ADAPTER_DEL_OBJECT_RECURSIVE**: adapter.delObjects supports options.recursive flag to delete whole object structures (since js.controller 2.2)
-* **ADAPTER_AUTO_DECRYPT_NATIVE**: The Controller supports auto decryption of encrypted native properties
-* **PLUGINS**: Plugins are supported by this js-controller and adapters, see section below for more details
+* **ADAPTER_DEL_OBJECT_RECURSIVE**: adapter.delObjects supports options.recursive flag to delete whole object structures (since js-controller 2.2)
+* **ADAPTER_AUTO_DECRYPT_NATIVE**: The Controller supports auto decryption of encrypted native properties (since js-controller 3.0)
+* **PLUGINS**: Plugins are supported by this js-controller and adapters, see section below for more details (since js-controller 3.0)
+* **CONTROLLER_NPM_AUTO_REBUILD**: Automatic rebuild when node version mismatch is detected (since js-controller 3.0)
+* **CONTROLLER_READWRITE_BASE_SETTINGS**: Allow read and write of js-controller base settings file (iobroker.json) via host messages (since js-controller 3.0)
 
 To check if certain adapter methods itself are existing please simply check for their existence like
 

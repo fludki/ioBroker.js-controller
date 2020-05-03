@@ -1,6 +1,6 @@
 {
   "name": "iobroker.js-controller",
-  "version": "3.0.14",
+  "version": "3.0.21",
   "engines": {
     "node": ">=10.0.0"
   },
@@ -16,16 +16,16 @@
     "iobroker": "./iobroker.js"
   },
   "dependencies": {
-    "@iobroker/plugin-base": "^0.1.1",
-    "@iobroker/plugin-sentry": "^0.1.2",
-    "chokidar": "^3.3.1",
+    "@iobroker/plugin-base": "^1.1.1",
+    "@iobroker/plugin-sentry": "^1.0.2",
+    "chokidar": "^3.4.0",
     "daemonize2": "^0.4.2",
     "debug": "^4.1.1",
     "decache": "^4.5.1",
     "deep-clone": "^3.0.3",
     "event-stream": "^4.0.1",
-    "iobroker.objects-redis": "^3.3.2",
-    "ioredis": "^4.16.2",
+    "iobroker.objects-redis": "^3.3.6",
+    "ioredis": "^4.16.3",
     "jsonwebtoken": "^8.5.1",
     "jszip": "^3.4.0",
     "loadavg-windows": "^1.1.1",
@@ -41,16 +41,16 @@
     "request": "^2.88.2",
     "respjs": "^4.2.0",
     "semver": "^7.3.2",
-    "tar": "^6.0.1",
+    "tar": "^6.0.2",
     "winston": "^3.2.1",
     "winston-daily-rotate-file": "^4.4.2",
     "yargs": "^15.3.1"
   },
   "devDependencies": {
     "@types/event-stream": "^3.3.34",
-    "@types/iobroker": "^3.0.2",
+    "@types/iobroker": "^3.0.6",
     "@types/mocha": "^7.0.2",
-    "@types/node": "^13.13.1",
+    "@types/node": "^13.13.4",
     "@types/yargs": "^15.0.4",
     "chai": "^4.2.0",
     "chai-as-promised": "^7.1.1",
@@ -59,7 +59,7 @@
     "gulp-jsdoc3": "^3.0.0",
     "gulp-replace": "^1.0.0",
     "istanbul": "^0.4.5",
-    "mocha": "^7.1.1",
+    "mocha": "^7.1.2",
     "sinon": "^9.0.2",
     "sinon-chai": "^3.5.0"
   },
